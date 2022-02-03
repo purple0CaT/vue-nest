@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue JS</title>
+    <style>
+      [v-cloak] {
+        display: none;
+      }
+      .box {
+        background-color: aqua;
+        width: 100px;
+        height: 100px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app" v-cloak>
+      <h1>{{greeting}}</h1>
+      <input v-model="greeting" type="text" />
+      <hr />
+      <div v-if="isVisible" class="box">Visible</div>
+      <button @click="toggleBox">Show box</button>
+    </main>
+    <!--  -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      let app = Vue.createApp({
+        data: function () {
+          return {
+            greeting: "Hello vue3 !",
+            isVisible: false,
+          };
+        },
+        methods: {
+          toggleBox() {
+            this.isVisible = !this.isVisible;
+          },
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>
