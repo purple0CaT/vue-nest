@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue JS</title>
+    <style>
+      #app {
+        min-height: 100vh;
+        width: 100vw;
+      }
+      [v-cloak] {
+        display: none;
+      }
+      .box {
+        background-color: aqua;
+        width: 100px;
+        height: 100px;
+        text-align: center;
+      }
+      input {
+        height: 2rem;
+        width: 10rem;
+        border: 1px solid grey;
+        border-radius: 5px;
+        margin: 0.5rem 0;
+      }
+      .loginForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app" v-cloak>
+      <button @click="toggleBox">Show box</button>
+      <hr />
+      <test-box v-if="isVisible" />
+    </main>
+    <!--  -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      let app = Vue.createApp({
+        data: function () {
+          return {
+            greeting: "Hello vue3 !",
+            isVisible: false,
+          };
+        },
+        methods: {
+          toggleBox() {
+            this.isVisible = !this.isVisible;
+          },
+          greet(greeting) {
+            // this.isVisible = !this.isVisible;
+            alert(greeting);
+          },
+        },
+      });
+      app.component("test-box", {
+        template: `
+          <div class='box'></div>
+        `,
+        created() {
+          console.log("created");
+        },
+        mounted() {
+          console.log("mounted");
+        },
+        updated() {
+          console.log("updated");
+        },
+        unmounted() {
+          console.log("unmounted");
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

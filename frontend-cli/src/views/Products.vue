@@ -1,17 +1,11 @@
 <template>
-  <div class="home">
-    <div class="splash-container">
-      <div class="splash">
-        <h1>Splendid Food</h1>
-      </div>
-    </div>
-
+  <div class="about">
     <main class="wrapper">
-      <h2>Recommended</h2>
+      <h1>Products</h1>
 
-      <div class="recommended">
+      <div class="card-container">
         <ProductCard
-          v-for="product in inventory.slice(0, 3)"
+          v-for="product in inventory"
           :key="product.id"
           :product="product"
           :addToCart="addToCart"
@@ -26,7 +20,7 @@
 import ProductCard from "../components/ProductCard.vue";
 
 export default {
-  name: "Home",
+  name: "Products",
   props: ["inventory", "addToCart"],
   components: {
     ProductCard,
