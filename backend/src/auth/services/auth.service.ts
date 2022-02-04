@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { format } from 'path/posix';
@@ -12,6 +13,7 @@ export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private jwtService: JwtService,
   ) {}
   //
   hashPassword(password: string): Observable<string> {
@@ -36,6 +38,40 @@ export class AuthService {
             return user;
           }),
         );
+      }),
+    );
+  }
+  //  Login
+  validateUser(email: string, password: string): Observable<User> {
+    return from(
+      this.userRepository.findOne(
+        { email },
+        {
+          select: ['id', 'firstname', 'lastname', 'email', 'password', 'role'],
+        },
+      ),
+    ).pipe(
+      switchMap((user: User) =>
+        from(bcrypt.compare(password, user.password)).pipe(
+          map((isValidPassword: boolean) => {
+            if (isValidPassword) {
+              delete user.password;
+              return user;
+            }
+          }),
+        ),
+      ),
+    );
+  }
+  //
+  loginUser(user: User): Observable<string> {
+    const { email, password } = user;
+    return this.validateUser(email, password).pipe(
+      switchMap((user: User) => {
+        if (user) {
+          // create JWT credentials
+          return from(this.jwtService.signAsync({ user }));
+        }
       }),
     );
   }

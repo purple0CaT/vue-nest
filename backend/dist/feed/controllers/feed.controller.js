@@ -15,13 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FeedController = void 0;
 const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
+const jwt_guard_1 = require("../../auth/guards/jwt.guard");
 const feed_service_1 = require("../services/feed.service");
 let FeedController = class FeedController {
     constructor(feedService) {
         this.feedService = feedService;
     }
-    create(post) {
-        return this.feedService.createPost(post);
+    create(post, req) {
+        return this.feedService.createPost(req.user, post);
     }
     findSelected(take = 5, skip = 0) {
         return this.feedService.findPosts(take, skip);
@@ -34,10 +35,12 @@ let FeedController = class FeedController {
     }
 };
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", rxjs_1.Observable)
 ], FeedController.prototype, "create", null);
 __decorate([

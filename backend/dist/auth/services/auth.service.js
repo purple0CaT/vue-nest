@@ -14,14 +14,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_1 = require("@nestjs/jwt");
 const typeorm_1 = require("@nestjs/typeorm");
 const bcrypt = require("bcrypt");
 const rxjs_1 = require("rxjs");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../models/user.entity");
 let AuthService = class AuthService {
-    constructor(userRepository) {
+    constructor(userRepository, jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
     hashPassword(password) {
         return (0, rxjs_1.from)(bcrypt.hash(password, 10));
@@ -41,11 +43,30 @@ let AuthService = class AuthService {
             }));
         }));
     }
+    validateUser(email, password) {
+        return (0, rxjs_1.from)(this.userRepository.findOne({ email }, {
+            select: ['id', 'firstname', 'lastname', 'email', 'password', 'role'],
+        })).pipe((0, rxjs_1.switchMap)((user) => (0, rxjs_1.from)(bcrypt.compare(password, user.password)).pipe((0, rxjs_1.map)((isValidPassword) => {
+            if (isValidPassword) {
+                delete user.password;
+                return user;
+            }
+        }))));
+    }
+    loginUser(user) {
+        const { email, password } = user;
+        return this.validateUser(email, password).pipe((0, rxjs_1.switchMap)((user) => {
+            if (user) {
+                return (0, rxjs_1.from)(this.jwtService.signAsync({ user }));
+            }
+        }));
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        jwt_1.JwtService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map
